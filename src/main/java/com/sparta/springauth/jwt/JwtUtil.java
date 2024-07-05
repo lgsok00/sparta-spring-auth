@@ -1,5 +1,7 @@
 package com.sparta.springauth.jwt;
 
+import com.sparta.springauth.entity.UserRoleEnum;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  * Util : 특정한 매개변수(파라미터)에 대한 작업을 수행하는 메서드들이 존재하는 클래스
@@ -50,5 +53,19 @@ public class JwtUtil {
   public void init() {
     byte[] bytes = Base64.getDecoder().decode(secretKey);
     key = Keys.hmacShaKeyFor(bytes);
+  }
+
+  // JWT 생성
+  public String createToken(String username, UserRoleEnum role) {
+    Date date = new Date();
+
+    return BEARER_PREFIX +
+            Jwts.builder()
+                    .setSubject(username)  // 사용자 식별자 값(ID)
+                    .claim(AUTHORIZATION_KEY, role)  // 사용자 권한
+                    .setExpiration(new Date(date.getTime() + TOKEN_TIME))  // 토큰 만료 시간
+                    .setIssuedAt(date)  // 발급일
+                    .signWith(key, signatureAlgorithm)  // 암호화 알고리즘
+                    .compact();
   }
 }
