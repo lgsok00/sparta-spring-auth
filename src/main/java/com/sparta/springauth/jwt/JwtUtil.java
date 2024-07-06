@@ -5,11 +5,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -55,7 +59,12 @@ public class JwtUtil {
     key = Keys.hmacShaKeyFor(bytes);
   }
 
-  // JWT 생성
+  /**
+   * JWT 생성 메서드
+   * @param username  사용자 이름
+   * @param role  사용자 권한
+   * @return  JWT 토큰
+   */
   public String createToken(String username, UserRoleEnum role) {
     Date date = new Date();
 
@@ -67,5 +76,25 @@ public class JwtUtil {
                     .setIssuedAt(date)  // 발급일
                     .signWith(key, signatureAlgorithm)  // 암호화 알고리즘
                     .compact();
+  }
+
+  /**
+   * JWT 를 Cookie 에 저장하는 메서드
+   * @param token  JWT 토큰
+   * @param response  Response 객체
+   */
+  public void addJwtToCookie(String token, HttpServletResponse response) {
+    try {
+      token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20");  // Cookie Value 에는 공백이 불가능
+
+      Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token);  // Name-Value
+      cookie.setPath("/");
+
+      // Response 객체에 Cookie 추가
+      response.addCookie(cookie);
+
+    } catch (UnsupportedEncodingException e) {
+      logger.error(e.getMessage());
+    }
   }
 }
