@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -96,5 +97,20 @@ public class JwtUtil {
     } catch (UnsupportedEncodingException e) {
       logger.error(e.getMessage());
     }
+  }
+
+  /**
+   * JWT 식별자를 substring 하는 메서드
+   * @param tokenValue  BEARER_PREFIX + JWT
+   * @return  JWT 토큰
+   */
+  public String substringToken(String tokenValue) {
+    // hasText : 공백과 null 체크
+    if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+      return tokenValue.substring(7);
+    }
+
+    logger.error("Not Found Token");
+    throw new NullPointerException("Not Found Token");
   }
 }
