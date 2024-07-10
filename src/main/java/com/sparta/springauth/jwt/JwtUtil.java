@@ -1,9 +1,13 @@
 package com.sparta.springauth.jwt;
 
 import com.sparta.springauth.entity.UserRoleEnum;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -112,5 +116,28 @@ public class JwtUtil {
 
     logger.error("Not Found Token");
     throw new NullPointerException("Not Found Token");
+  }
+
+  /**
+   * JWT 검증 메서드
+   * @param token  JWT 토큰
+   * @return  true or false
+   */
+  public boolean validateToken(String token) {
+    try {
+      // JWT 파싱
+      Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+      return true;
+
+    } catch (SecurityException | MalformedJwtException | SignatureException e) {
+      logger.error("Invalid JWT signature, 유효하지 않은 JWT 서명 입니다.");
+    } catch (ExpiredJwtException e) {
+      logger.error("Expired JWT token, 만료된 JWT token 입니다.");
+    } catch (UnsupportedJwtException e) {
+      logger.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+    } catch (IllegalArgumentException e) {
+      logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+    }
+    return false;
   }
 }
