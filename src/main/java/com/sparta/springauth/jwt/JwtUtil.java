@@ -1,6 +1,7 @@
 package com.sparta.springauth.jwt;
 
 import com.sparta.springauth.entity.UserRoleEnum;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -139,5 +140,14 @@ public class JwtUtil {
       logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
     }
     return false;
+  }
+
+  /**
+   * JWT 에서 사용자 정보 반환 메서드
+   * @param token  JWT 토큰
+   * @return  사용자 정보 Claim
+   */
+  public Claims getUserInfoFromToken(String token) {
+    return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
   }
 }
