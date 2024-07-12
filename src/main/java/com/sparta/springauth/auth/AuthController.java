@@ -1,5 +1,8 @@
 package com.sparta.springauth.auth;
 
+import com.sparta.springauth.entity.UserRoleEnum;
+import com.sparta.springauth.jwt.JwtUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +20,12 @@ import java.net.URLEncoder;
 public class AuthController {
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
+
+  private final JwtUtil jwtUtil;
+
+  public AuthController(JwtUtil jwtUtil) {
+    this.jwtUtil = jwtUtil;
+  }
 
   /**
    * Cookie 생성 메서드
@@ -72,6 +81,50 @@ public class AuthController {
     System.out.println("value = " + value);
 
     return "getSession : " + value;
+  }
+
+  /**
+   * JWT 생성 메서드
+   * @param response  Response 객체
+   * @return  JWT 토큰
+   */
+  @GetMapping("/create-jwt")
+  public String createJWT(HttpServletResponse response) {
+    // JWT 생성
+    String token = jwtUtil.createToken("Robbie", UserRoleEnum.USER);
+
+    // JWT 를 쿠키에 저장
+    jwtUtil.addJwtToCookie(token, response);
+
+    return "createJWT : " + token;
+  }
+
+  /**
+   * JWT 조회 메서드
+   * @param tokenValue  쿠키에 저장된 JWT 토큰
+   * @return  Bearer 가 제거된 JWT 토큰
+   */
+  @GetMapping("/get-jwt")
+  public String getJWT(@CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
+    // JWT substring
+    String token = jwtUtil.substringToken(tokenValue);
+
+    // JWT 검증
+    if (!jwtUtil.validateToken(token)) {
+      throw new IllegalArgumentException("Token Error");
+    }
+
+    // JWT 에서 사용자 정보 추출
+    Claims info = jwtUtil.getUserInfoFromToken(token);
+    // 사용자 이름
+    String username = info.getSubject();
+    System.out.println("username = " + username);
+
+    // 사용자 권한
+    String authority = (String) info.get(JwtUtil.AUTHORIZATION_KEY);
+    System.out.println("authority = " + authority);
+
+    return "getJWT : " + username + ", " + authority;
   }
 
 
