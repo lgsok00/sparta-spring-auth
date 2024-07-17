@@ -162,9 +162,9 @@ body {
 }
 
 #sign-text {
-    position:absolute;
-    top:48px;
-    right:110px;
+    position: absolute;
+    top: 48px;
+    right: 110px;
     font-size: 18px;
     font-family: SpoqaHanSansNeo;
     font-size: 18px;
@@ -178,9 +178,9 @@ body {
 }
 
 #login-text {
-    position:absolute;
-    top:48px;
-    right:50px;
+    position: absolute;
+    top: 48px;
+    right: 50px;
     font-size: 18px;
     font-family: SpoqaHanSansNeo;
     font-size: 18px;
