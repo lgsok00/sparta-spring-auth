@@ -36,4 +36,10 @@ public class User {
   @Enumerated(value = EnumType.STRING)  // enum 타입을 DB 컬럼으로 지정할 때 사용
   private UserRoleEnum role;
 
+  public User(String username, String password, String email, UserRoleEnum role) {
+    this.username = username;
+    this.password = password;
+    this.email = email;
+    this.role = role;
+  }
 }
