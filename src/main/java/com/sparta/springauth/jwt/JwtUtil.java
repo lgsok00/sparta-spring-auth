@@ -11,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.Key;
 import java.util.Base64;
@@ -149,5 +151,26 @@ public class JwtUtil {
    */
   public Claims getUserInfoFromToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+  }
+
+  /**
+   * HttpServletRequest 객체에서 JWT 추출 메서드
+   * @param request  HttpServletRequest 객체
+   * @return  JWT
+   */
+  public String getTokenFromRequest(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
+          try {
+            return URLDecoder.decode(cookie.getValue(), "UTF-8");  // Encode 되어 넘어간 Value 다시 Decode
+          } catch (UnsupportedEncodingException e) {
+            return null;
+          }
+        }
+      }
+    }
+    return null;
   }
 }
