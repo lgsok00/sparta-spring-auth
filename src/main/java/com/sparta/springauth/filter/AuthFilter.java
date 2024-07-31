@@ -37,8 +37,9 @@ public class AuthFilter implements Filter {
     String url = httpServletRequest.getRequestURI();
 
     // 회원가입, 로그인 관련 API 요청은 인증 처리 하지않고 요청 진행
-    if (StringUtils.hasText(url) && (url.startsWith("api/user") || url.startsWith("/css")
+    if (StringUtils.hasText(url) && (url.startsWith("/api/user") || url.startsWith("/css")
             || url.startsWith("/js"))) {
+      log.info("인증 처리를 하지 않는 URL : {}", url);
       chain.doFilter(request, response);  // 다음 Filter 로 이동
 
     } else {  // 나머지 API 요청은 인증 처리 진행
