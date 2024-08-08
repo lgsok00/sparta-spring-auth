@@ -40,21 +40,4 @@ public class UserController {
 
     return "redirect:/api/user/login-page";
   }
-
-  /**
-   * 로그인 API
-   * @param requestDto  로그인 요청 데이터
-   * @param response  JWT 응답 객체
-   * @return
-   */
-  @PostMapping("/user/login")
-  public String login(LoginRequestDto requestDto, HttpServletResponse response) {
-    try {
-      userService.login(requestDto, response);
-    } catch (Exception e) {
-      return "redirect:/api/user/login-page?error";
-    }
-
-    return "redirect:/";
-  }
 }
