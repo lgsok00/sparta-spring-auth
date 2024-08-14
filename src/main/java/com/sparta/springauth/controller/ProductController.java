@@ -26,7 +26,7 @@ public class ProductController {
   }
 
   @Secured(UserRoleEnum.Authority.ADMIN)
-  @GetMapping("/product/secured")
+  @GetMapping("/products/secured")
   public String getProductsByAdmin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
     System.out.println("userDetails.getUsername() = " + userDetails.getUsername());
     for (GrantedAuthority authority : userDetails.getAuthorities()) {
