@@ -77,6 +77,13 @@ public class WebSecurityConfig {
     http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
+    // 접근 불가 페이지
+    http.exceptionHandling((exceptionHandling) ->
+            exceptionHandling
+                    // "접근 불가" 페이지 URL 설정
+                    .accessDeniedPage("/forbidden.html")
+            );
+
     return http.build();
   }
 }
